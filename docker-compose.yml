@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+  opa:
+    image: openpolicyagent/opa:0.20.5-rootless
+    volumes:
+      - ./compose/opa/rules.rego:/tmp/opa/rules.rego:ro
+    command:
+      - "run"
+      - "--server"
+      - "--log-level=debug"
+      - "--log-format=json-pretty"
+      - "--set=decision_logs.console=true"
+      - "/tmp/opa"
+
+  openresty:
+    build:
+      context: .
+      dockerfile: ./compose/openresty/Dockerfile
+    volumes:
+      - ./compose/openresty/conf.d/:/etc/nginx/conf.d:ro
+    environment:
+      # We need to specify LUA_PATH so that the json library can be imported correctly
+      LUA_PATH: /etc/nginx/conf.d/?.lua;;
+    ports:
+      - 80:80
+    depends_on:
+      - opa
+      - whoami
+
+  whoami:
+    image: containous/whoami
