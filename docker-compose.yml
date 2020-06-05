@@ -19,9 +19,6 @@ services:
       dockerfile: ./compose/openresty/Dockerfile
     volumes:
       - ./compose/openresty/conf.d/:/etc/nginx/conf.d:ro
-    environment:
-      # We need to specify LUA_PATH so that the json library can be imported correctly
-      LUA_PATH: /etc/nginx/conf.d/?.lua;;
     ports:
       - 80:80
     depends_on:
