@@ -8,14 +8,16 @@ import input
 
 client_id := "whoami"
 
-oidc_config = http.send({
-	"url": "http://keycloak.localhost/auth/realms/applications/.well-known/openid-configuration",
-	"method": "GET",
-}).body
+keycloak_well_known_location = "http://keycloak.localhost/auth/realms/applications/.well-known/openid-configuration"
 
 # -----------------------------------------------
 #   Stuff you don't need to modify
 # -----------------------------------------------
+
+oidc_config = http.send({
+	"url": keycloak_well_known_location,
+	"method": "GET",
+}).body
 
 jwks = http.send({
 	"url": oidc_config.jwks_uri,
