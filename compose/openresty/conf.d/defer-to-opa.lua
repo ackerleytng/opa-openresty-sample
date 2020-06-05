@@ -7,6 +7,7 @@ local json = require("json")
 local path = Url.parse(ngx.var.uri).pathname
 
 local auth_header = ngx.var.http_Authorization
+local token = nil
 if auth_header then
    _, _, token = string.find(auth_header, "Bearer%s+(.+)")
 end
