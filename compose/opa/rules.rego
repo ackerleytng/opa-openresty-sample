@@ -12,10 +12,12 @@ client_id := "foo"
 #   Stuff you don't need to modify
 # -----------------------------------------------
 
-token = {"payload": payload} {
+token = {"type": type, "payload": payload} {
+	[type, bearer_token] := regex.split("\\s+", input.headers.authorization)
+
 	# TODO: switch to decode_verify
 	#   This will be used to verify the token itself, aud, expiry and issuer
-	[header, payload, _] := io.jwt.decode(input.token)
+	[header, payload, _] := io.jwt.decode(bearer_token)
 }
 
 default allow = false
@@ -49,7 +51,16 @@ x_auth_user_must_match_user_in_token {
 	input.headers["x-auth-user"] == token.payload.preferred_username
 }
 
+token_type_is_bearer {
+	token.type == "bearer"
+}
+
+token_type_is_bearer {
+	token.type == "Bearer"
+}
+
 default_rule_components {
+	token_type_is_bearer
 	all_headers_in_whitelist
 	x_auth_user_must_match_user_in_token
 }
