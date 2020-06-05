@@ -41,7 +41,7 @@ whitelisted_headers := {
 	"x-auth-user",
 }
 
-no_headers_outside_whitelist {
+all_headers_in_whitelist {
 	count({h | input.headers[h]; not whitelisted_headers[h]}) == 0
 }
 
@@ -50,7 +50,7 @@ x_auth_user_must_match_user_in_token {
 }
 
 default_rule_components {
-	no_headers_outside_whitelist
+	all_headers_in_whitelist
 	x_auth_user_must_match_user_in_token
 }
 
