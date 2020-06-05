@@ -6,18 +6,33 @@ import input
 #   Configure this
 # -----------------------------------------------
 
-client_id := "foo"
+client_id := "whoami"
+
+oidc_config = http.send({
+	"url": "http://keycloak.localhost/auth/realms/applications/.well-known/openid-configuration",
+	"method": "GET",
+}).body
 
 # -----------------------------------------------
 #   Stuff you don't need to modify
 # -----------------------------------------------
 
-token = {"type": type, "payload": payload} {
+jwks = http.send({
+	"url": oidc_config.jwks_uri,
+	"method": "GET",
+}).raw_body
+
+token_constraints = {
+	"cert": jwks,
+	"iss": oidc_config.issuer,
+	"time": time.now_ns(),
+	"aud": client_id,
+}
+
+token = {"type": type, "payload": payload, "valid": valid} {
 	[type, bearer_token] := regex.split("\\s+", input.headers.authorization)
 
-	# TODO: switch to decode_verify
-	#   This will be used to verify the token itself, aud, expiry and issuer
-	[header, payload, _] := io.jwt.decode(bearer_token)
+	[valid, _, payload] := io.jwt.decode_verify(bearer_token, token_constraints)
 }
 
 default allow = false
@@ -38,8 +53,11 @@ default allow = false
 whitelisted_headers := {
 	"host",
 	"accept",
+	"accept-encoding",
 	"user-agent",
 	"authorization",
+	"x-forwarded-for",
+	"x-forwarded-proto",
 	"x-auth-user",
 }
 
@@ -60,6 +78,7 @@ token_type_is_bearer {
 }
 
 default_rule_components {
+	token.valid
 	token_type_is_bearer
 	all_headers_in_whitelist
 	x_auth_user_must_match_user_in_token

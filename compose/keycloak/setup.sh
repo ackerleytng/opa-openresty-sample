@@ -5,7 +5,7 @@
 export PATH=$PATH:/opt/jboss/keycloak/bin
 
 echo '>>> Logging into Keycloak'
-kcadm.sh config credentials --server http://keycloak:8080/auth --realm master --user admin --password password
+kcadm.sh config credentials --server http://keycloak.localhost/auth --realm master --user admin --password password
 
 # This won't create another realm if one with this name exists
 echo '>>> Creating applications realm'
