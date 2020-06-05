@@ -1,11 +1,8 @@
 local http = require("resty.http")
-local Url = require("min.url")
 local json = require("json")
 
 
 -- parse the necessary information out of the request
-local path = Url.parse(ngx.var.uri).pathname
-
 local auth_header = ngx.var.http_Authorization
 local token = nil
 if auth_header then
@@ -15,10 +12,10 @@ end
 -- form specs for opa to make decision
 local request_specs = {
    method = ngx.req.get_method(),
-   path = path,
-   token = token,
+   path = ngx.var.uri,
    headers = ngx.req.get_headers(),
-   remote_addr = ngx.var.remote_addr
+   remote_addr = ngx.var.remote_addr,
+   token = token,
 }
 
 -- make the request out to opa
