@@ -54,3 +54,5 @@ $ echo 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIxM28yajc1VlRPUU5rWUhE
 }
 $
 ```
+
+> Alternatively, run/read `./quickstart.sh`
